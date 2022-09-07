@@ -1,9 +1,10 @@
-pub mod hash;
+pub(crate) mod hash;
 pub use hash::{
-    Basic,
+    basic::Basic,
     Error,
     Hash,
-    Secure,
+    secret::Secret,
+    secure::Secure,
     Result,
 };
 #[cfg(test)]
@@ -11,6 +12,7 @@ mod tests {
     use crate::{
         Basic,
         Hash,
+        Secret,
         Secure,
     };
     #[test]
@@ -49,5 +51,18 @@ mod tests {
         assert!(valid_res.is_ok());
         let is_valid = valid_res.unwrap();
         assert!(is_valid);
+    }
+    #[test]
+    fn secret_get_key() {
+        dotenvy::dotenv().unwrap();
+        Secret::get_secret().unwrap();
+    }
+    #[test]
+    fn secret_from_string() {
+        dotenvy::dotenv().unwrap();
+        const ENCRYPTED: &'static str = "SomethingToEncrypt";
+        let secret = Secret::from_string(ENCRYPTED).unwrap();
+        let decrypted = secret.decrypt().unwrap();
+        assert_eq!(ENCRYPTED, decrypted);
     }
 }

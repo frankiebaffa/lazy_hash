@@ -22,10 +22,17 @@ impl Secret {
         let secret = aead::SecretKey::from_slice(secret_dec.as_slice()).as_err()?;
         Ok(secret)
     }
-    pub fn generate_secret() -> Result<String> {
+    pub fn generate_secret_bytes_with_len(len: usize) -> Result<Vec<u8>> {
+        let secret = aead::SecretKey::generate(len).as_err()?;
+        Ok(secret.unprotected_as_bytes().to_vec())
+    }
+    pub fn generate_secret_bytes() -> Vec<u8> {
         let secret = aead::SecretKey::default();
-        let secret_slice = secret.unprotected_as_bytes();
-        let secret_b64 = encode_config(secret_slice, URL_SAFE_NO_PAD);
+        secret.unprotected_as_bytes().to_vec()
+    }
+    pub fn generate_secret() -> Result<String> {
+        let bytes = Self::generate_secret_bytes();
+        let secret_b64 = encode_config(bytes, URL_SAFE_NO_PAD);
         Ok(secret_b64)
     }
     pub fn decrypt(&self) -> Result<String> {

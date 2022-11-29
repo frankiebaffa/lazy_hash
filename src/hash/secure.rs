@@ -24,11 +24,11 @@ impl Secure {
     const COST: u32 = DEFAULT_COST;
     const VERSION: Version = Version::TwoB;
     pub fn validate<'a>(
-        check: &'a str, against: &'a str
+        input: &'a str, stored: &'a str
     ) -> Result<bool> {
-        let hash_bytes = decode_config(against, URL_SAFE_NO_PAD).as_err()?;
-        let stored_hash = String::from_utf8(hash_bytes).as_err()?;
-        let is_valid = verify(check, &stored_hash).as_err()?;
+        let stored_bytes = decode_config(stored, URL_SAFE_NO_PAD).as_err()?;
+        let stored_hash = String::from_utf8(stored_bytes).as_err()?;
+        let is_valid = verify(input, &stored_hash).as_err()?;
         Ok(is_valid)
     }
     pub fn get_salt(&self) -> String {

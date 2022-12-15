@@ -17,7 +17,7 @@ use {
         result::Result as StdResult,
         string::FromUtf8Error,
     },
-    uuid::Uuid,
+    uuidv4_rs::uuidv4,
 };
 #[derive(Debug)]
 pub enum Error {
@@ -112,7 +112,7 @@ pub trait Hash: Sized {
     fn get_hash(&self) -> String;
     fn from_string<'a>(to_hash: &'a str) -> Result<Self>;
     fn rand() -> Result<Self> {
-        let uuid = Uuid::new_v4().to_string();
+        let uuid = uuidv4::<String>();
         Self::from_string(&uuid)
     }
 }

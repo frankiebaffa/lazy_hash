@@ -13,6 +13,5 @@ version = "0.13.0"
 version = "0.15.3"
 [dependencies.orion]
 version = "0.17.2"
-[dependencies.uuid]
-version = "1.1.2"
-features = ["v4"]
+[dependencies.uuidv4-rs]
+path = "../uuidv4-rs"

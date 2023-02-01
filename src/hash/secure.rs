@@ -13,6 +13,7 @@ use {
     crate::{
         Hash,
         hash::IntoError,
+        Error,
         Result,
     },
 };
@@ -35,15 +36,18 @@ impl Secure {
         self.salt.clone()
     }
 }
-impl Hash for Secure {
-    fn get_hash(&self) -> String {
-        self.hash.clone()
-    }
-    fn from_string<'a>(to_hash: &'a str) -> Result<Self> {
-        let hash_parts = hash_with_result(to_hash, Self::COST).as_err()?;
+impl TryFrom<String> for Secure {
+    type Error = Error;
+    fn try_from(input: String) -> Result<Self> {
+        let hash_parts = hash_with_result(&input, Self::COST).as_err()?;
         let salt = hash_parts.get_salt();
         let hash = hash_parts.format_for_version(Self::VERSION);
         let b64 = encode_config(hash, URL_SAFE_NO_PAD);
         return Ok(Secure { hash: b64, salt, });
+    }
+}
+impl Hash for Secure {
+    fn get_hash(&self) -> String {
+        self.hash.clone()
     }
 }

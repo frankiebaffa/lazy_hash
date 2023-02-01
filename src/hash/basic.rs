@@ -3,20 +3,19 @@ use {
         encode_config,
         URL_SAFE_NO_PAD,
     },
-    crate::{
-        Hash,
-        Result,
-    },
+    crate::Hash,
 };
 pub struct Basic {
     hash: String,
 }
+impl From<String> for Basic {
+    fn from(input: String) -> Self {
+        let hash = encode_config(&input, URL_SAFE_NO_PAD);
+        Basic { hash }
+    }
+}
 impl Hash for Basic {
     fn get_hash(&self) -> String {
         self.hash.clone()
-    }
-    fn from_string<'a>(to_hash: &'a str) -> Result<Self> {
-        let hash = encode_config(to_hash, URL_SAFE_NO_PAD);
-        return Ok(Basic { hash });
     }
 }

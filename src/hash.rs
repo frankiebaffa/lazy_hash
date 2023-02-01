@@ -108,11 +108,11 @@ impl<T> IntoError<T, VarError> for StdResult<T, VarError> {
         }
     }
 }
-pub trait Hash: Sized {
+pub trait Hash: Sized + TryFrom<String> {
     fn get_hash(&self) -> String;
-    fn from_string<'a>(to_hash: &'a str) -> Result<Self>;
-    fn rand() -> Result<Self> {
+    fn rand() -> std::result::Result<Self, Self::Error> {
         let uuid = uuidv4::<String>();
-        Self::from_string(&uuid)
+        Self::try_from(uuid)
     }
 }
+

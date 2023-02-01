@@ -22,9 +22,9 @@ mod tests {
         rand.unwrap();
     }
     #[test]
-    fn basic_from_string() {
+    fn basic_try_from() {
         const HASH_THIS: &'static str = "SomethingToHash";
-        let hash = Basic::from_string(HASH_THIS);
+        let hash = Basic::try_from(HASH_THIS.to_owned());
         assert!(hash.is_ok());
         hash.unwrap();
     }
@@ -35,16 +35,16 @@ mod tests {
         rand.unwrap();
     }
     #[test]
-    fn secure_from_string() {
+    fn secure_try_from() {
         const HASH_THIS: &'static str = "SomethingToHash";
-        let secure = Secure::from_string(HASH_THIS);
+        let secure = Secure::try_from(HASH_THIS.to_owned());
         assert!(secure.is_ok());
         secure.unwrap();
     }
     #[test]
     fn secure_validate() {
         const HASH_THIS: &'static str = "SomethingToHash";
-        let res = Secure::from_string(HASH_THIS);
+        let res = Secure::try_from(HASH_THIS.to_owned());
         assert!(res.is_ok());
         let secure = res.unwrap();
         let valid_res = Secure::validate(HASH_THIS, &secure.get_hash());
@@ -58,10 +58,10 @@ mod tests {
         Secret::get_secret().unwrap();
     }
     #[test]
-    fn secret_from_string() {
+    fn secret_try_from() {
         dotenvy::dotenv().unwrap();
         const ENCRYPTED: &'static str = "SomethingToEncrypt";
-        let secret = Secret::from_string(ENCRYPTED).unwrap();
+        let secret = Secret::try_from(ENCRYPTED.to_owned()).unwrap();
         let decrypted = secret.decrypt().unwrap();
         assert_eq!(ENCRYPTED, decrypted);
     }

@@ -6,6 +6,7 @@ use {
     },
     orion::aead,
     crate::{
+        Error,
         Hash,
         hash::IntoError,
         Result,
@@ -44,14 +45,17 @@ impl Secret {
         Ok(decrypted_str)
     }
 }
-impl Hash for Secret {
-    fn get_hash(&self) -> String {
-        self.hash.clone()
-    }
-    fn from_string<'a>(input: &'a str) -> Result<Self> {
+impl TryFrom<String> for Secret {
+    type Error = Error;
+    fn try_from(input: String) -> Result<Self> {
         let secret = Self::get_secret()?;
         let encrypted = aead::seal(&secret, input.as_bytes()).as_err()?;
         let hash = encode_config(&encrypted, URL_SAFE_NO_PAD);
         Ok(Self { hash })
+    }
+}
+impl Hash for Secret {
+    fn get_hash(&self) -> String {
+        self.hash.clone()
     }
 }

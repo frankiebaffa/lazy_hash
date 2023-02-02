@@ -31,14 +31,27 @@ impl Secret {
         let secret = aead::SecretKey::default();
         secret.unprotected_as_bytes().to_vec()
     }
-    pub fn generate_secret() -> Result<String> {
+    pub fn generate_secret() -> String {
         let bytes = Self::generate_secret_bytes();
+        let secret_b64 = encode_config(bytes, URL_SAFE_NO_PAD);
+        secret_b64
+    }
+    pub fn generate_secret_with_len(len: usize) -> Result<String> {
+        let bytes = Self::generate_secret_bytes_with_len(len)?;
         let secret_b64 = encode_config(bytes, URL_SAFE_NO_PAD);
         Ok(secret_b64)
     }
     pub fn decrypt(&self) -> Result<String> {
         let secret = Self::get_secret()?;
         let encrypted_bytes = decode_config(&self.hash, URL_SAFE_NO_PAD)
+            .as_err()?;
+        let decrypted = aead::open(&secret, &encrypted_bytes).as_err()?;
+        let decrypted_str = String::from_utf8(decrypted).as_err()?;
+        Ok(decrypted_str)
+    }
+    pub fn decrypt_from(encrypted: &str) -> Result<String> {
+        let secret = Self::get_secret()?;
+        let encrypted_bytes = decode_config(encrypted, URL_SAFE_NO_PAD)
             .as_err()?;
         let decrypted = aead::open(&secret, &encrypted_bytes).as_err()?;
         let decrypted_str = String::from_utf8(decrypted).as_err()?;

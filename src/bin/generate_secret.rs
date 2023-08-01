@@ -3,7 +3,7 @@ use lazy_hash::{
     Secret,
 };
 fn main() -> Result<()> {
-    let secret = Secret::generate_secret()?;
+    let secret = Secret::generate_secret();
     println!("{}", secret);
     Ok(())
 }

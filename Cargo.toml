@@ -14,4 +14,5 @@ version = "0.15.3"
 [dependencies.orion]
 version = "0.17.2"
 [dependencies.uuidv4-rs]
-path = "../uuidv4-rs"
+git = "https://github.com/frankiebaffa/uuidv4-rs"
+branch = "master"

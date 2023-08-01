@@ -17,11 +17,19 @@ pub struct Secret {
     hash: String,
 }
 impl Secret {
-    pub fn get_secret() -> Result<aead::SecretKey> {
-        let secret_enc = std::env::var(SECRET).as_err()?;
-        let secret_dec = decode_config(secret_enc, URL_SAFE_NO_PAD).as_err()?;
+    pub fn get_secret_from_str(secret_str: &str) -> Result<aead::SecretKey> {
+        let secret_dec = decode_config(secret_str, URL_SAFE_NO_PAD).as_err()?;
         let secret = aead::SecretKey::from_slice(secret_dec.as_slice()).as_err()?;
         Ok(secret)
+    }
+    pub fn get_secret() -> Result<aead::SecretKey> {
+        let secret_enc = std::env::var(SECRET).as_err()?;
+        Self::get_secret_from_str(&secret_enc)
+    }
+    pub fn encrypt(secret: &aead::SecretKey, data: &str) -> Result<Self> {
+        let encrypted = aead::seal(secret, data.as_bytes()).as_err()?;
+        let hash = encode_config(&encrypted, URL_SAFE_NO_PAD);
+        Ok(Self { hash })
     }
     pub fn generate_secret_bytes_with_len(len: usize) -> Result<Vec<u8>> {
         let secret = aead::SecretKey::generate(len).as_err()?;
@@ -62,9 +70,7 @@ impl TryFrom<String> for Secret {
     type Error = Error;
     fn try_from(input: String) -> Result<Self> {
         let secret = Self::get_secret()?;
-        let encrypted = aead::seal(&secret, input.as_bytes()).as_err()?;
-        let hash = encode_config(&encrypted, URL_SAFE_NO_PAD);
-        Ok(Self { hash })
+        Self::encrypt(&secret, &input)
     }
 }
 impl Hash for Secret {
